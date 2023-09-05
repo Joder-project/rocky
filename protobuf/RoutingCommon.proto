@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package rocky.routing;
+option java_package = "org.alps.rocky.core.proto";
+option java_outer_classname = "RoutingCommon";
+
+message RoutingFrame {
+  FrameType type = 1;
+  bytes frame = 2;
+}
+
+enum FrameType {
+  C_Connect = 0; // 上报信息
+  C_HealthIdle = 1; // 心跳
+  C_Active = 2; // 激活
+  C_Disable = 3; // 停机
+
+  S_ChangeService = 20; // 服务器推送
+}

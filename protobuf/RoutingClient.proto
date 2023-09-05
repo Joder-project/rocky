@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package rocky.routing;
+option java_package = "org.alps.rocky.core.proto";
+option java_outer_classname = "RoutingClient";
+import "RoutingCommon.proto";
+
+/*服务信息*/
+message ServiceInfo {
+  // 命名空间
+  string namespace = 1;
+  // 类型
+  string profile = 2;
+  string instanceId = 4;
+  string ip = 5;
+  int32 port = 6;
+  // 开通 modules
+  repeated string modules = 7;
+  // 允许接入routing的 token
+  string accessKey = 8;
+
+  map<string, string> msg = 9;
+}
+
+// 健康心跳请求
+message HealthIdleInfo {
+  // 上报数据(负载、在线人数、内存)
+  map<string, string> msg = 1;
+}
+
+// 激活请求
+message UpServiceInfo {
+  // 上报数据(负载、在线人数、内存)
+  map<string, string> msg = 1;
+}
+
+// 停止请求
+message DownServiceInfo {
+  // 上报数据(负载、在线人数、内存)
+  map<string, string> msg = 1;
+}

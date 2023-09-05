@@ -1,3 +1,10 @@
-spring:
-  main:
-    web-application-type: none
+server:
+  port: 7380
+
+rocky:
+  server:
+    port: 5678
+    zookeeper:
+      watch-root: '/rocky'
+      hosts: '127.0.0.1:2181'
+      session-timeout: 20000

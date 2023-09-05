@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package rocky.routing;
+option java_package = "org.alps.rocky.core.proto";
+option java_outer_classname = "RoutingErrors";
+
+enum Code {
+  NONE = 0; // don't use
+  ACCESS_KEY_INVALID = 1000; // 认证不通过
+}

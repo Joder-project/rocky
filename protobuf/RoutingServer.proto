@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package rocky.routing;
+option java_package = "org.alps.rocky.core.proto";
+option java_outer_classname = "RoutingServer";
+import "RoutingCommon.proto";
+
+message InstanceInfo {
+  // 类型
+  string profile = 1;
+
+  string instanceId = 3;
+  string ip = 4;
+  int32 port = 5;
+  bool active = 6;
+}
+
+/*模块信息*/
+message ModuleInfo {
+  // 命名空间
+  string namespace = 1;
+  string moduleName = 2;
+  OpsType type = 3;
+  repeated InstanceInfo instances = 4;
+}
+
+enum OpsType {
+  Modify = 0; // 修改
+  Delete = 1; // 停机
+}

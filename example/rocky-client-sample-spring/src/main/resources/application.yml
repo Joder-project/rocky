@@ -1,0 +1,20 @@
+spring:
+  main:
+    web-application-type: none
+
+alps:
+  server:
+    port: 7788
+    type: tcp   # must
+  modules:
+    - name: 'User'
+    - name: 'Cross'
+    - name: 'Rank'
+
+rocky:
+  client:
+    namespace: 'test'
+    profile: prod
+    access-key: 'aaa'
+    router-register-url: 'http://127.0.0.1:7380'
+
