@@ -22,7 +22,7 @@ public class RockyClientConfiguration {
         Objects.requireNonNull(rockyClientProperties.getAccessKey(), "accessKey");
         return new RockyClient(rockyClientProperties.getRouterRegisterUrl(), rockyClientProperties.getNamespace(),
                 rockyClientProperties.getProfile(),
-                alpsProperties.getModules().stream().map(AlpsProperties.ModuleProperties::getName).toList(),
+                alpsProperties.getModules(),
                 alpsServerProperties.getPort(), rockyClientProperties.getAccessKey(), rockyClientProperties.getInstanceId());
     }
 
