@@ -25,22 +25,24 @@ public class RockyClientFrameListener implements FrameListener {
     @SuppressWarnings("unchecked")
     @Override
     public void listen(AlpsSession session, Frame frame) {
-        var rFrame = (RoutingFrame) frame;
-        var data = rFrame.frameData();
-        if (data == null) {
-            return;
-        }
-        try {
-            var routingFrame = RoutingCommon.RoutingFrame.parseFrom(data);
-            if (!handlers.containsKey(routingFrame.getType())) {
-                log.error("router receive an unknown frame type. {}", routingFrame.getType());
+        Thread.startVirtualThread(() -> {
+            var rFrame = (RoutingFrame) frame;
+            var data = rFrame.frameData();
+            if (data == null) {
                 return;
             }
-            var routerFrameHandler = (RouterFrameHandler<MessageLite>) handlers.get(routingFrame.getType());
-            routerFrameHandler.handle(session, routerFrameHandler.decode(routingFrame.getFrame()));
-        } catch (Exception ex) {
-            log.error("router receive error", ex);
-        }
+            try {
+                var routingFrame = RoutingCommon.RoutingFrame.parseFrom(data);
+                if (!handlers.containsKey(routingFrame.getType())) {
+                    log.error("router receive an unknown frame type. {}", routingFrame.getType());
+                    return;
+                }
+                var routerFrameHandler = (RouterFrameHandler<MessageLite>) handlers.get(routingFrame.getType());
+                routerFrameHandler.handle(session, routerFrameHandler.decode(routingFrame.getFrame()));
+            } catch (Exception ex) {
+                log.error("router receive error", ex);
+            }
+        });
     }
 }
 

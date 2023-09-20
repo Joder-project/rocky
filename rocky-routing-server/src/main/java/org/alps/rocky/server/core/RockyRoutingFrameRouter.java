@@ -29,22 +29,24 @@ public class RockyRoutingFrameRouter implements FrameListener {
     @SuppressWarnings("unchecked")
     @Override
     public void listen(AlpsSession session, Frame frame) {
-        var rFrame = (RoutingFrame) frame;
-        var data = rFrame.frameData();
-        if (data == null) {
-            return;
-        }
-        try {
-            var routingFrame = RoutingCommon.RoutingFrame.parseFrom(data);
-            if (!handlers.containsKey(routingFrame.getType())) {
-                log.error("router receive an unknown frame type. {}", routingFrame.getType());
+        Thread.startVirtualThread(() -> {
+            var rFrame = (RoutingFrame) frame;
+            var data = rFrame.frameData();
+            if (data == null) {
                 return;
             }
-            var routerFrameHandler = (RouterFrameHandler<MessageLite>) handlers.get(routingFrame.getType());
-            routerFrameHandler.handle(session, routerFrameHandler.decode(routingFrame.getFrame()));
-        } catch (Exception ex) {
-            log.error("router receive error", ex);
-        }
+            try {
+                var routingFrame = RoutingCommon.RoutingFrame.parseFrom(data);
+                if (!handlers.containsKey(routingFrame.getType())) {
+                    log.error("router receive an unknown frame type. {}", routingFrame.getType());
+                    return;
+                }
+                var routerFrameHandler = (RouterFrameHandler<MessageLite>) handlers.get(routingFrame.getType());
+                routerFrameHandler.handle(session, routerFrameHandler.decode(routingFrame.getFrame()));
+            } catch (Exception ex) {
+                log.error("router receive error", ex);
+            }
+        });
     }
 }
 
@@ -79,7 +81,7 @@ class ConnectRouterFrameHandler implements RouterFrameHandler<RoutingClient.Serv
         if (!isValid(accessKey)) {
             ((AlpsEnhancedSession) session).error()
                     .code(RoutingErrors.Code.ACCESS_KEY_INVALID_VALUE)
-                    .send().subscribe();
+                    .send();
             return;
         }
         var instanceId = frame.getInstanceId();
@@ -198,16 +200,18 @@ class RockySessionListener implements SessionListener {
 
     @Override
     public void disconnect(AlpsSession session) {
-        try {
-            String instanceId = session.attr(INSTANCE_KEY);
-            if (instanceId == null) {
-                return;
+        Thread.startVirtualThread(() -> {
+            try {
+                String instanceId = session.attr(INSTANCE_KEY);
+                if (instanceId == null) {
+                    return;
+                }
+                String namespace = session.attr(NAMESPACE_KEY);
+                register.removeInstance(namespace, instanceId);
+                moduleNotification.unRegister(namespace, instanceId);
+            } catch (Exception ex) {
+                log.error("监听断开事件异常", ex);
             }
-            String namespace = session.attr(NAMESPACE_KEY);
-            register.removeInstance(namespace, instanceId);
-            moduleNotification.unRegister(namespace, instanceId);
-        } catch (Exception ex) {
-            log.error("监听断开事件异常", ex);
-        }
+        });
     }
 }
